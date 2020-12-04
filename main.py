@@ -1,18 +1,36 @@
 from fastapi import FastAPI
 from ml import nlp
+from pydantic import BaseModel
+import starlette
+from typing import List
 
 app = FastAPI()
 
 @app.get("/")
 def read_main():
-    return {"message": "Welcome to my First FastAPI api"}
+    return {
+        "message": "Welcome to my First FastAPI api"}
 
-print(app)
+
+class Article(BaseModel):
+    content: str
+    number: int
+    comments: List[str] = []
 
 
 @app.post("/article/")
-def analyze_article1(body: dict):
-    return body
+def analyze_article1(article: Article):
+
+    doc = nlp(article.content)
+    ents = []
+
+    for ent in doc.ents:
+        ents.append({"text": ent.text, "label": ent.label_})
+
+    return {
+        "message": article.content,
+        "comments": article.comments,
+        "ents": ents}
 
 
 @app.get("/article/{article_id}")
