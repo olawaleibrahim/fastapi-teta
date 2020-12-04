@@ -21,18 +21,32 @@ class Article(BaseModel):
 @app.post("/article/")
 def analyze_article1(articles: List[Article]):
 
+    '''
+    Analyze article(s) and return its entities
+    using ✨ -- spaCy -- ✨
+
+    Statistical models *will* have **errors**
+
+    * Extract entities
+    * Scream comments
+    '''
+
     messages = []
+    comments = []
     ents = []
     for article in articles:
         messages.append(article.content)
-        doc = nlp(article.content)
 
+        for comment in article.comments:
+            comments.append(comment.upper())
+
+        doc = nlp(article.content)
         for ent in doc.ents:
             ents.append({"text": ent.text, "label": ent.label_})
 
     return {
         "messages": messages,
-        "comments": article.comments,
+        "comments": comments,
         "ents": ents}
 
 
