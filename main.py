@@ -19,16 +19,19 @@ class Article(BaseModel):
 
 
 @app.post("/article/")
-def analyze_article1(article: Article):
+def analyze_article1(articles: List[Article]):
 
-    doc = nlp(article.content)
+    messages = []
     ents = []
+    for article in articles:
+        messages.append(article.content)
+        doc = nlp(article.content)
 
-    for ent in doc.ents:
-        ents.append({"text": ent.text, "label": ent.label_})
+        for ent in doc.ents:
+            ents.append({"text": ent.text, "label": ent.label_})
 
     return {
-        "message": article.content,
+        "messages": messages,
         "comments": article.comments,
         "ents": ents}
 
